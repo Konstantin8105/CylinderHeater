@@ -15,6 +15,12 @@ func main() {
 	tube := sectionTube{od: 2.4, t: 0.005}
 	area, _ := tube.area()
 	fmt.Println("tube = ", tube, "\tarea = ", area)
+	var ss []sectionProperty
+	ss = append(ss, tube)
+	for _, s := range ss {
+		aaa, _ := s.momentInertiaX()
+		fmt.Println("sectionProperty is found - ", aaa)
+	}
 }
 
 type sectionProperty interface {
@@ -22,8 +28,8 @@ type sectionProperty interface {
 	momentInertiaX() (float64, error)
 	momentInertiaZ() (float64, error)
 	minimalMomentOfInertia() (float64, error)
-	classOfSectionByEN() (int, error)
 	sectionModulusWx() (float64, error)
 	sectionModulusWz() (float64, error)
-	checkGeometryMistake() error
+	eurocodeClass(fy float64) (int, error)
+	check() error
 }
