@@ -17,6 +17,7 @@ func main() {
 	fmt.Println("tube = ", tube, "\tarea = ", area)
 	var ss []sectionProperty
 	ss = append(ss, tube)
+	ss = append(ss, sectionPlate{h: 0.100, t: 0.010})
 	for _, s := range ss {
 		aaa, _ := s.momentInertiaX()
 		fmt.Println("sectionProperty is found - ", aaa)
