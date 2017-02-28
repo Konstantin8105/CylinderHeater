@@ -18,6 +18,7 @@ func main() {
 	var ss []sectionProperty
 	ss = append(ss, tube)
 	ss = append(ss, sectionPlate{h: 0.100, t: 0.010})
+	//ss = append(ss, sectionIbeam{h: 120, b: 120, tw: 0.01, tf: 0.02})
 	for _, s := range ss {
 		aaa, _ := s.momentInertiaX()
 		fmt.Println("sectionProperty is found - ", aaa)
