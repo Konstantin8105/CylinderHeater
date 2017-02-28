@@ -69,7 +69,7 @@ func (s sectionTube) check() error {
 	if s.od > 20 {
 		return fmt.Errorf("Outside diameter is too big %v, please use unit - meter", s.od)
 	}
-	if s.t/2 > s.od {
+	if s.t > s.od/2 {
 		return fmt.Errorf("Tube is not correct %v x %v. Please use unit - meter", s.od, s.t)
 	}
 	return nil
