@@ -50,13 +50,13 @@ func TestPlateWz(t *testing.T) {
 func isEqual(t *testing.T, v1 float64, err error, v2 float64) {
 	eps := 1e-8
 	if err != nil {
-		t.Errorf("Error %v", err)
+		t.Errorf("Error 1 : %v", err)
 	}
 	if v1 == 0 {
-		t.Errorf("Error %v - cannot test if value is zero", v1)
+		t.Errorf("Error 2 : %v - cannot test if value is zero", v1)
 	}
 	if math.Abs((v1-v2)/v1) > eps {
-		t.Errorf("Calculation of plate is not correct.: (%.9e ; %.9e) = error %e", v1, v2, math.Abs((v1-v2)/v1))
+		t.Errorf("Error 3 : Calculation of plate is not correct.: (%.9e ; %.9e) = error %e", v1, v2, math.Abs((v1-v2)/v1))
 	}
 
 }

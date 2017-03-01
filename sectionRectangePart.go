@@ -60,7 +60,7 @@ func (s sectionRectanglePart) momentInertiaX() (float64, error) {
 	centerZ, _ := s.centerMassZ()
 	var J float64
 	for _, part := range s.parts {
-		J += part.width*math.Pow(part.height, 3.0)/12 + (part.zCenter-centerZ)*(part.height*part.width)
+		J += part.width*math.Pow(part.height, 3.0)/12 + math.Pow(part.zCenter-centerZ, 2.0)*(part.height*part.width)
 	}
 	return J, nil
 }
@@ -91,6 +91,8 @@ func (s sectionRectanglePart) sectionModulusWx() (float64, error) {
 		maxZ = math.Max(maxZ, part.zCenter+part.height/2.)
 		maxZ = math.Max(maxZ, part.zCenter-part.height/2.)
 	}
+	z, _ := s.centerMassZ()
+	maxZ = maxZ - z
 	Jx, _ := s.momentInertiaX()
 	return Jx / maxZ, nil
 }
@@ -104,6 +106,8 @@ func (s sectionRectanglePart) sectionModulusWz() (float64, error) {
 		maxX = math.Max(maxX, part.xCenter+part.width/2.)
 		maxX = math.Max(maxX, part.xCenter-part.width/2.)
 	}
+	x, _ := s.centerMassX()
+	maxX = maxX - x
 	Jz, _ := s.momentInertiaZ()
 	return Jz / maxX, nil
 }
@@ -131,8 +135,8 @@ func (s sectionRectanglePart) rotate() (newS sectionRectanglePart, err error) {
 	if err = s.check(); err != nil {
 		return *new(sectionRectanglePart), err
 	}
-	var newParts []rectanglePart
-	newParts = make([]rectanglePart, len(s.parts))
+	//	var newParts []rectanglePart
+	newParts := make([]rectanglePart, 0)
 	for _, part := range s.parts {
 		newParts = append(newParts, rectanglePart{
 			xCenter: part.zCenter,
