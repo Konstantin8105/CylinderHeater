@@ -14,21 +14,15 @@ type sectionRectanglePart struct {
 	parts []rectanglePart
 }
 
-func (s sectionRectanglePart) area() (float64, error) {
-	if err := s.check(); err != nil {
-		return 0, err
-	}
+func (s sectionRectanglePart) area() float64 {
 	var area float64
 	for _, part := range s.parts {
 		area += part.width * part.height
 	}
-	return area, nil
+	return area
 }
 
-func (s sectionRectanglePart) centerMassX() (float64, error) {
-	if err := s.check(); err != nil {
-		return 0, err
-	}
+func (s sectionRectanglePart) centerMassX() float64 {
 	var summs float64
 	var areas float64
 	for _, part := range s.parts {
@@ -36,13 +30,10 @@ func (s sectionRectanglePart) centerMassX() (float64, error) {
 		summs += area * part.xCenter
 		areas += area
 	}
-	return summs / areas, nil
+	return summs / areas
 }
 
-func (s sectionRectanglePart) centerMassZ() (float64, error) {
-	if err := s.check(); err != nil {
-		return 0, err
-	}
+func (s sectionRectanglePart) centerMassZ() float64 {
 	var summs float64
 	var areas float64
 	for _, part := range s.parts {
@@ -50,70 +41,51 @@ func (s sectionRectanglePart) centerMassZ() (float64, error) {
 		summs += area * part.zCenter
 		areas += area
 	}
-	return summs / areas, nil
+	return summs / areas
 }
 
-func (s sectionRectanglePart) momentInertiaX() (float64, error) {
-	if err := s.check(); err != nil {
-		return 0, err
-	}
-	centerZ, _ := s.centerMassZ()
+func (s sectionRectanglePart) momentInertiaX() float64 {
+	centerZ := s.centerMassZ()
 	var J float64
 	for _, part := range s.parts {
 		J += part.width*math.Pow(part.height, 3.0)/12 + math.Pow(part.zCenter-centerZ, 2.0)*(part.height*part.width)
 	}
-	return J, nil
+	return J
 }
 
-func (s sectionRectanglePart) momentInertiaZ() (float64, error) {
-	if err := s.check(); err != nil {
-		return 0, err
-	}
+func (s sectionRectanglePart) momentInertiaZ() float64 {
 	r, _ := s.rotate()
 	return r.momentInertiaX()
 }
 
-func (s sectionRectanglePart) minimalMomentOfInertia() (float64, error) {
-	if err := s.check(); err != nil {
-		return 0, err
-	}
-	Jx, _ := s.momentInertiaX()
-	Jz, _ := s.momentInertiaZ()
-	return math.Min(Jx, Jz), nil
+func (s sectionRectanglePart) minimalMomentOfInertia() float64 {
+	Jx := s.momentInertiaX()
+	Jz := s.momentInertiaZ()
+	return math.Min(Jx, Jz)
 }
 
-func (s sectionRectanglePart) sectionModulusWx() (float64, error) {
-	if err := s.check(); err != nil {
-		return 0, err
-	}
+func (s sectionRectanglePart) sectionModulusWx() float64 {
 	maxZ := s.parts[0].zCenter
 	for _, part := range s.parts {
 		maxZ = math.Max(maxZ, part.zCenter+part.height/2.)
 		maxZ = math.Max(maxZ, part.zCenter-part.height/2.)
 	}
-	z, _ := s.centerMassZ()
+	z := s.centerMassZ()
 	maxZ = maxZ - z
-	Jx, _ := s.momentInertiaX()
-	return Jx / maxZ, nil
+	Jx := s.momentInertiaX()
+	return Jx / maxZ
 }
 
-func (s sectionRectanglePart) sectionModulusWz() (float64, error) {
-	if err := s.check(); err != nil {
-		return 0, err
-	}
+func (s sectionRectanglePart) sectionModulusWz() float64 {
 	maxX := s.parts[0].xCenter
 	for _, part := range s.parts {
 		maxX = math.Max(maxX, part.xCenter+part.width/2.)
 		maxX = math.Max(maxX, part.xCenter-part.width/2.)
 	}
-	x, _ := s.centerMassX()
+	x := s.centerMassX()
 	maxX = maxX - x
-	Jz, _ := s.momentInertiaZ()
-	return Jz / maxX, nil
-}
-
-func (s sectionRectanglePart) eurocodeClass(fy float64) (int, error) {
-	return -1, fmt.Errorf("Cannot use eucode for section calculates by parts")
+	Jz := s.momentInertiaZ()
+	return Jz / maxX
 }
 
 func (s sectionRectanglePart) check() error {

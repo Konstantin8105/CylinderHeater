@@ -23,64 +23,30 @@ type sectionPlate struct {
 	t float64 // thickness of plate // meter
 }
 
-func (s sectionPlate) area() (float64, error) {
-	if err := s.check(); err != nil {
-		return 0, err
-	}
-	return s.h * s.t, nil
+func (s sectionPlate) area() float64 {
+	return s.h * s.t
 }
 
-func (s sectionPlate) momentInertiaX() (float64, error) {
-	if err := s.check(); err != nil {
-		return 0, err
-	}
-	return s.t * math.Pow(s.h, 3.) / 12.0, nil
+func (s sectionPlate) momentInertiaX() float64 {
+	return s.t * math.Pow(s.h, 3.) / 12.0
 }
 
-func (s sectionPlate) momentInertiaZ() (float64, error) {
-	if err := s.check(); err != nil {
-		return 0, err
-	}
-	return s.h * math.Pow(s.t, 3.) / 12.0, nil
+func (s sectionPlate) momentInertiaZ() float64 {
+	return s.h * math.Pow(s.t, 3.) / 12.0
 }
 
-func (s sectionPlate) minimalMomentOfInertia() (float64, error) {
-	if err := s.check(); err != nil {
-		return 0, err
-	}
-	Ix, err := s.momentInertiaX()
-	if err != nil {
-		return 0, err
-	}
-	Iz, err := s.momentInertiaZ()
-	if err != nil {
-		return 0, err
-	}
-	return math.Min(Ix, Iz), nil
+func (s sectionPlate) minimalMomentOfInertia() float64 {
+	Ix := s.momentInertiaX()
+	Iz := s.momentInertiaZ()
+	return math.Min(Ix, Iz)
 }
 
-func (s sectionPlate) sectionModulusWx() (float64, error) {
-	if err := s.check(); err != nil {
-		return 0, err
-	}
-	return s.t * s.h * s.h / 6.0, nil
+func (s sectionPlate) sectionModulusWx() float64 {
+	return s.t * s.h * s.h / 6.0
 }
 
-func (s sectionPlate) sectionModulusWz() (float64, error) {
-	if err := s.check(); err != nil {
-		return 0, err
-	}
-	return s.h * s.t * s.t / 6.0, nil
-}
-
-func (s sectionPlate) eurocodeClass(fy float64) (int, error) {
-	if err := s.check(); err != nil {
-		return 0, err
-	}
-	if fy > 600 {
-		return -1, fmt.Errorf("Fy is not correct. Please use unit: MPa")
-	}
-	return -1, fmt.Errorf("Cannot found eurocode class for plate")
+func (s sectionPlate) sectionModulusWz() float64 {
+	return s.h * s.t * s.t / 6.0
 }
 
 func (s sectionPlate) check() error {
