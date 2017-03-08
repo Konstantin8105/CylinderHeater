@@ -50,6 +50,9 @@ func (s sectionTube) eurocodeClass(fy float64) (int, error) {
 	if fy <= 0 {
 		return -1, fmt.Errorf("Fy cannot be equal or less zero")
 	}
+	if fy > 600 {
+		return -1, fmt.Errorf("Fy is not correct. Please use unit: MPa")
+	}
 	switch {
 	case s.od/s.t <= 50*math.Pow(math.Sqrt(235./fy), 2):
 		return 1, nil

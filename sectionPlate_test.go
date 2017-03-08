@@ -56,7 +56,7 @@ func isEqual(t *testing.T, v1 float64, err error, v2 float64) {
 		t.Errorf("Error 2 : %v - cannot test if value is zero", v1)
 	}
 	if math.Abs((v1-v2)/v1) > eps {
-		t.Errorf("Error 3 : Calculation of plate is not correct.: (%.9e ; %.9e) = error %e", v1, v2, math.Abs((v1-v2)/v1))
+		t.Errorf("Error 3 : Calculation is not correct.: (%.9e ; %.9e) = error %e", v1, v2, math.Abs((v1-v2)/v1))
 	}
 
 }

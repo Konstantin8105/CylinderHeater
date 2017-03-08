@@ -77,7 +77,10 @@ func (s sectionPlate) eurocodeClass(fy float64) (int, error) {
 	if err := s.check(); err != nil {
 		return 0, err
 	}
-	return -1, fmt.Errorf("Cannot fount eurocode class for plate")
+	if fy > 600 {
+		return -1, fmt.Errorf("Fy is not correct. Please use unit: MPa")
+	}
+	return -1, fmt.Errorf("Cannot found eurocode class for plate")
 }
 
 func (s sectionPlate) check() error {
