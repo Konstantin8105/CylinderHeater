@@ -54,14 +54,13 @@ func (s sectionRectanglePart) momentInertiaX() float64 {
 }
 
 func (s sectionRectanglePart) momentInertiaZ() float64 {
-	r, _ := s.rotate()
+	r, _ := s.rotate90()
 	return r.momentInertiaX()
 }
 
 func (s sectionRectanglePart) minimalMomentOfInertia() float64 {
-	Jx := s.momentInertiaX()
-	Jz := s.momentInertiaZ()
-	return math.Min(Jx, Jz)
+	// TODO: more logical calculation
+	return math.Min(s.momentInertiaX(), s.momentInertiaZ())
 }
 
 func (s sectionRectanglePart) sectionModulusWx() float64 {
@@ -95,15 +94,15 @@ func (s sectionRectanglePart) check() error {
 	for _, part := range s.parts {
 		switch {
 		case part.width <= 0 || part.width > 1.0:
-			return fmt.Errorf("Not correct width %v of part", part.width)
+			return fmt.Errorf("Not correct width of part %.5e", part.width)
 		case part.height <= 0 || part.height > 1.0:
-			return fmt.Errorf("Not correct height %v of part", part.height)
+			return fmt.Errorf("Not correct height of part %.5e", part.height)
 		}
 	}
 	return nil
 }
 
-func (s sectionRectanglePart) rotate() (newS sectionRectanglePart, err error) {
+func (s sectionRectanglePart) rotate90() (newS sectionRectanglePart, err error) {
 	if err = s.check(); err != nil {
 		return *new(sectionRectanglePart), err
 	}

@@ -10,18 +10,13 @@ func init() {
 }
 
 func main() {
-	fmt.Println("Hello, yo")
-	fmt.Println("UPN200D", sections["UPN200D"])
-	tube := sectionTube{od: 2.4, t: 0.005}
-	area := tube.area()
-	fmt.Println("tube = ", tube, "\tarea = ", area)
+	fmt.Println("Hello")
 	var ss []sectionProperty
-	ss = append(ss, tube)
+	ss = append(ss, sectionTube{od: 2.4, t: 0.005})
 	ss = append(ss, sectionPlate{h: 0.100, t: 0.010})
-	//ss = append(ss, sectionIbeam{h: 120, b: 120, tw: 0.01, tf: 0.02})
+	ss = append(ss, sectionIbeam{h: 0.120, b: 0.120, tw: 0.01, tf: 0.02})
 	for _, s := range ss {
-		aaa := s.momentInertiaX()
-		fmt.Println("sectionProperty is found - ", aaa)
+		fmt.Printf("sectionProperty is found - %.5e m^4: Error: %v\n", s.momentInertiaX(), s.check())
 	}
 }
 
