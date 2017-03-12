@@ -9,37 +9,37 @@
 package section
 
 type sectionT struct {
-	plate1, plate2 sectionPlate
+	plate1, plate2 Plate
 }
 
 func (s sectionT) check() error {
-	err := s.plate1.check()
+	err := s.plate1.Check()
 	if err != nil {
 		return err
 	}
-	err = s.plate2.check()
+	err = s.plate2.Check()
 	if err != nil {
 		return err
 	}
-	err = s.convert().check()
+	err = s.convert().Check()
 	return err
 }
 
-func (s sectionT) convert() sectionRectanglePart {
-	var parts []rectanglePart
+func (s sectionT) convert() RectangleSection {
+	var parts []Rectangle
 	// plate 1
-	parts = append(parts, rectanglePart{
-		xCenter: 0,
-		zCenter: s.plate2.t + s.plate1.h/2.0,
-		height:  s.plate1.h,
-		width:   s.plate1.t,
+	parts = append(parts, Rectangle{
+		XCenter: 0,
+		ZCenter: s.plate2.Thickness + s.plate1.Height/2.0,
+		Height:  s.plate1.Height,
+		Width:   s.plate1.Thickness,
 	})
 	// plate 2
-	parts = append(parts, rectanglePart{
-		xCenter: 0,
-		zCenter: s.plate2.t / 2.0,
-		height:  s.plate2.t,
-		width:   s.plate2.h,
+	parts = append(parts, Rectangle{
+		XCenter: 0,
+		ZCenter: s.plate2.Thickness / 2.0,
+		Height:  s.plate2.Thickness,
+		Width:   s.plate2.Height,
 	})
-	return sectionRectanglePart{parts: parts}
+	return RectangleSection{Parts: parts}
 }

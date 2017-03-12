@@ -5,130 +5,139 @@ import (
 	"math"
 )
 
-type rectanglePart struct {
-	xCenter, zCenter float64
-	height, width    float64
+// Rectangle - elementary rectangle element for section design
+type Rectangle struct {
+	XCenter, ZCenter float64 // coordinate of center // meter
+	Height, Width    float64 // size of rectangle    // meter
 }
 
-type sectionRectanglePart struct {
-	parts []rectanglePart
+// RectangleSection - section created only with rectangle
+type RectangleSection struct {
+	Parts []Rectangle // Slice of section rectangle
 }
 
-func (s sectionRectanglePart) area() float64 {
+// Area - cross-section Area
+func (s RectangleSection) Area() float64 {
 	var area float64
-	for _, part := range s.parts {
-		area += part.width * part.height
+	for _, part := range s.Parts {
+		area += part.Width * part.Height
 	}
 	return area
 }
 
-func (s sectionRectanglePart) centerMassX() float64 {
+func (s RectangleSection) centerMassX() float64 {
 	var summs float64
 	var areas float64
-	for _, part := range s.parts {
-		area := part.height * part.width
-		summs += area * part.xCenter
+	for _, part := range s.Parts {
+		area := part.Height * part.Width
+		summs += area * part.XCenter
 		areas += area
 	}
 	return summs / areas
 }
 
-func (s sectionRectanglePart) centerMassZ() float64 {
+func (s RectangleSection) centerMassZ() float64 {
 	var summs float64
 	var areas float64
-	for _, part := range s.parts {
-		area := part.height * part.width
-		summs += area * part.zCenter
+	for _, part := range s.Parts {
+		area := part.Height * part.Width
+		summs += area * part.ZCenter
 		areas += area
 	}
 	return summs / areas
 }
 
-func (s sectionRectanglePart) momentInertiaX() float64 {
+// Jx - Moment inertia of axe X
+func (s RectangleSection) Jx() float64 {
 	centerZ := s.centerMassZ()
 	var J float64
-	for _, part := range s.parts {
-		J += part.width*math.Pow(part.height, 3.0)/12 + math.Pow(part.zCenter-centerZ, 2.0)*(part.height*part.width)
+	for _, part := range s.Parts {
+		J += part.Width*math.Pow(part.Height, 3.0)/12 + math.Pow(part.ZCenter-centerZ, 2.0)*(part.Height*part.Width)
 	}
 	return J
 }
 
-func (s sectionRectanglePart) momentInertiaZ() float64 {
+// Jz - Moment inertia of axe Z
+func (s RectangleSection) Jz() float64 {
 	r, _ := s.rotate90()
-	return r.momentInertiaX()
+	return r.Jx()
 }
 
-func (s sectionRectanglePart) minimalMomentOfInertia() float64 {
+// Jmin - Minimal moment inertia
+func (s RectangleSection) Jmin() float64 {
 	return s.convert().Jmin()
 }
 
-func (s sectionRectanglePart) sectionModulusWx() float64 {
-	maxZ := s.parts[0].zCenter
-	for _, part := range s.parts {
-		maxZ = math.Max(maxZ, part.zCenter+part.height/2.)
-		maxZ = math.Max(maxZ, part.zCenter-part.height/2.)
+// Wx - Section modulus of axe X
+func (s RectangleSection) Wx() float64 {
+	maxZ := s.Parts[0].ZCenter
+	for _, part := range s.Parts {
+		maxZ = math.Max(maxZ, part.ZCenter+part.Height/2.)
+		maxZ = math.Max(maxZ, part.ZCenter-part.Height/2.)
 	}
 	z := s.centerMassZ()
 	maxZ = maxZ - z
-	Jx := s.momentInertiaX()
+	Jx := s.Jx()
 	return Jx / maxZ
 }
 
-func (s sectionRectanglePart) sectionModulusWz() float64 {
-	maxX := s.parts[0].xCenter
-	for _, part := range s.parts {
-		maxX = math.Max(maxX, part.xCenter+part.width/2.)
-		maxX = math.Max(maxX, part.xCenter-part.width/2.)
+// Wz - Section modulus of axe Z
+func (s RectangleSection) Wz() float64 {
+	maxX := s.Parts[0].XCenter
+	for _, part := range s.Parts {
+		maxX = math.Max(maxX, part.XCenter+part.Width/2.)
+		maxX = math.Max(maxX, part.XCenter-part.Width/2.)
 	}
 	x := s.centerMassX()
 	maxX = maxX - x
-	Jz := s.momentInertiaZ()
+	Jz := s.Jz()
 	return Jz / maxX
 }
 
-func (s sectionRectanglePart) check() error {
-	if len(s.parts) == 0 {
+// Check - Check property of section
+func (s RectangleSection) Check() error {
+	if len(s.Parts) == 0 {
 		return fmt.Errorf("No parts inside")
 	}
-	for _, part := range s.parts {
+	for _, part := range s.Parts {
 		switch {
-		case part.width <= 0 || part.width > 1.0:
-			return fmt.Errorf("Not correct width of part %.5e", part.width)
-		case part.height <= 0 || part.height > 1.0:
-			return fmt.Errorf("Not correct height of part %.5e", part.height)
+		case part.Width <= 0 || part.Width > 1.0:
+			return fmt.Errorf("Not correct width of part %.5e", part.Width)
+		case part.Height <= 0 || part.Height > 1.0:
+			return fmt.Errorf("Not correct height of part %.5e", part.Height)
 		}
 	}
 	return nil
 }
 
-func (s sectionRectanglePart) rotate90() (newS sectionRectanglePart, err error) {
-	if err = s.check(); err != nil {
-		return *new(sectionRectanglePart), err
+func (s RectangleSection) rotate90() (newS RectangleSection, err error) {
+	if err = s.Check(); err != nil {
+		return *new(RectangleSection), err
 	}
 	//	var newParts []rectanglePart
-	var newParts []rectanglePart
-	for _, part := range s.parts {
-		newParts = append(newParts, rectanglePart{
-			xCenter: part.zCenter,
-			zCenter: part.xCenter,
-			height:  part.width,
-			width:   part.height})
+	var newParts []Rectangle
+	for _, part := range s.Parts {
+		newParts = append(newParts, Rectangle{
+			XCenter: part.ZCenter,
+			ZCenter: part.XCenter,
+			Height:  part.Width,
+			Width:   part.Height})
 	}
-	return sectionRectanglePart{parts: newParts}, nil
+	return RectangleSection{Parts: newParts}, nil
 }
 
-func (s sectionRectanglePart) convert() TriangleSection {
+func (s RectangleSection) convert() TriangleSection {
 	var triangles []Triangle
-	for _, part := range s.parts {
+	for _, part := range s.Parts {
 		//   c                d
 		//   ******************
 		//   *                *
 		//   ******************
 		//   a                b
-		a := Coord{X: part.xCenter - part.width/2., Z: part.zCenter - part.height/2.}
-		b := Coord{X: part.xCenter + part.width/2., Z: part.zCenter - part.height/2.}
-		c := Coord{X: part.xCenter - part.width/2., Z: part.zCenter + part.height/2.}
-		d := Coord{X: part.xCenter + part.width/2., Z: part.zCenter + part.height/2.}
+		a := Coord{X: part.XCenter - part.Width/2., Z: part.ZCenter - part.Height/2.}
+		b := Coord{X: part.XCenter + part.Width/2., Z: part.ZCenter - part.Height/2.}
+		c := Coord{X: part.XCenter - part.Width/2., Z: part.ZCenter + part.Height/2.}
+		d := Coord{X: part.XCenter + part.Width/2., Z: part.ZCenter + part.Height/2.}
 		triangles = append(triangles, Triangle{[3]Coord{a, b, d}})
 		triangles = append(triangles, Triangle{[3]Coord{a, d, c}})
 	}

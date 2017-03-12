@@ -1,4 +1,4 @@
-package triangleSection
+package section
 
 import (
 	"math"
@@ -12,13 +12,13 @@ func getTestTriangles() [2]Triangle {
 	}
 }
 
-func getTestCorrect() section.sectionRectanglePart {
-	return section.sectionRectanglePart{parts: []rectanglePart{
-		rectanglePart{
-			xCenter: 0.5,
-			zCenter: 0.5,
-			height:  1,
-			width:   1,
+func getTestCorrect() RectangleSection {
+	return RectangleSection{Parts: []Rectangle{
+		Rectangle{
+			XCenter: 0.5,
+			ZCenter: 0.5,
+			Height:  1,
+			Width:   1,
 		}}}
 }
 
@@ -55,31 +55,31 @@ func method4(t Triangle) float64 {
 func TestMethod0(t *testing.T) {
 	area := method0(getTestTriangles()[0])
 	area += method0(getTestTriangles()[1])
-	isSameFloat64(t, area, getTestCorrect().area())
+	isSameFloat64(t, area, getTestCorrect().Area())
 }
 
 func TestMethod1(t *testing.T) {
 	area := method1(getTestTriangles()[0])
 	area += method1(getTestTriangles()[1])
-	isSameFloat64(t, area, getTestCorrect().area())
+	isSameFloat64(t, area, getTestCorrect().Area())
 }
 
 func TestMethod2(t *testing.T) {
 	area := method2(getTestTriangles()[0])
 	area += method2(getTestTriangles()[1])
-	isSameFloat64(t, area, getTestCorrect().area())
+	isSameFloat64(t, area, getTestCorrect().Area())
 }
 
 func TestMethod3(t *testing.T) {
 	area := method3(getTestTriangles()[0])
 	area += method3(getTestTriangles()[1])
-	isSameFloat64(t, area, getTestCorrect().area())
+	isSameFloat64(t, area, getTestCorrect().Area())
 }
 
 func TestMethod4(t *testing.T) {
 	area := method4(getTestTriangles()[0])
 	area += method4(getTestTriangles()[1])
-	isSameFloat64(t, area, getTestCorrect().area())
+	isSameFloat64(t, area, getTestCorrect().Area())
 }
 
 func getTestBenchTriangle() Triangle {

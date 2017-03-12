@@ -11,47 +11,47 @@ func getTestIbeam() Ibeam {
 func TestIbeamArea(t *testing.T) {
 	section := getTestIbeam()
 	correctResult := 1177.2e-6
-	v := section.area()
-	err := section.check()
+	v := section.Area()
+	err := section.Check()
 	isEqual(t, v, err, correctResult)
 }
 
 func TestIbeamJx(t *testing.T) {
 	section := getTestIbeam()
 	correctResult := 1943774e-12
-	v := section.momentInertiaX()
-	err := section.check()
+	v := section.Jx()
+	err := section.Check()
 	isEqual(t, v, err, correctResult)
 }
 
 func TestIbeamJz(t *testing.T) {
 	section := getTestIbeam()
 	correctResult := 200300.025e-12
-	v := section.momentInertiaZ()
-	err := section.check()
+	v := section.Jz()
+	err := section.Check()
 	isEqual(t, v, err, correctResult)
 }
 
 func TestIbeamMinJ(t *testing.T) {
 	section := getTestIbeam()
 	correctResult := 200300.025e-12
-	v := section.minimalMomentOfInertia()
-	err := section.check()
+	v := section.Jmin()
+	err := section.Check()
 	isEqual(t, v, err, correctResult)
 }
 
 func TestIbeamWx(t *testing.T) {
 	section := getTestIbeam()
 	correctResult := 38875.4803e-9
-	v := section.sectionModulusWx()
-	err := section.check()
+	v := section.Wx()
+	err := section.Check()
 	isEqual(t, v, err, correctResult)
 }
 
 func TestIbeamWz(t *testing.T) {
 	section := getTestIbeam()
 	correctResult := 7283.63727e-9
-	v := section.sectionModulusWz()
-	err := section.check()
+	v := section.Wz()
+	err := section.Check()
 	isEqual(t, v, err, correctResult)
 }

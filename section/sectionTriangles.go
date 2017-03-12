@@ -1,4 +1,4 @@
-package triangleSection
+package section
 
 import (
 	"math"

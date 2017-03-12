@@ -8,63 +8,70 @@ type Ibeam struct {
 	Tf float64 // thickness of flange // meter
 }
 
-func (s Ibeam) convert() (r sectionRectanglePart) {
-	var parts []rectanglePart
+func (s Ibeam) convert() (r RectangleSection) {
+	var parts []Rectangle
 	// flanges
-	parts = append(parts, rectanglePart{
-		xCenter: 0,
-		zCenter: s.H/2. - s.Tf/2.,
-		height:  s.Tf,
-		width:   s.B,
+	parts = append(parts, Rectangle{
+		XCenter: 0,
+		ZCenter: s.H/2. - s.Tf/2.,
+		Height:  s.Tf,
+		Width:   s.B,
 	})
-	parts = append(parts, rectanglePart{
-		xCenter: 0,
-		zCenter: -s.H/2. + s.Tf/2.,
-		height:  s.Tf,
-		width:   s.B,
+	parts = append(parts, Rectangle{
+		XCenter: 0,
+		ZCenter: -s.H/2. + s.Tf/2.,
+		Height:  s.Tf,
+		Width:   s.B,
 	})
 	// web
-	parts = append(parts, rectanglePart{
-		xCenter: 0,
-		zCenter: 0,
-		height:  s.H - 2.0*s.Tf,
-		width:   s.Tw,
+	parts = append(parts, Rectangle{
+		XCenter: 0,
+		ZCenter: 0,
+		Height:  s.H - 2.0*s.Tf,
+		Width:   s.Tw,
 	})
-	r = sectionRectanglePart{parts: parts}
+	r = RectangleSection{Parts: parts}
 	return
 }
 
-func (s Ibeam) area() float64 {
+// Area - cross-section Area
+func (s Ibeam) Area() float64 {
 	r := s.convert()
-	return r.area()
+	return r.Area()
 }
 
-func (s Ibeam) momentInertiaX() float64 {
+// Jx - Moment inertia of axe X
+func (s Ibeam) Jx() float64 {
 	r := s.convert()
-	return r.momentInertiaX()
+	return r.Jx()
 }
 
-func (s Ibeam) momentInertiaZ() float64 {
+// Jz - Moment inertia of axe Z
+func (s Ibeam) Jz() float64 {
 	r := s.convert()
-	return r.momentInertiaZ()
+	return r.Jz()
 }
 
-func (s Ibeam) minimalMomentOfInertia() float64 {
+// Jmin - Minimal moment inertia
+func (s Ibeam) Jmin() float64 {
 	r := s.convert()
-	return r.minimalMomentOfInertia()
+	return r.Jmin()
 }
 
-func (s Ibeam) sectionModulusWx() float64 {
+// Wx - Section modulus of axe X
+func (s Ibeam) Wx() float64 {
 	r := s.convert()
-	return r.sectionModulusWx()
+	return r.Wx()
 }
 
-func (s Ibeam) sectionModulusWz() float64 {
+// Wz - Section modulus of axe Z
+func (s Ibeam) Wz() float64 {
 	r := s.convert()
-	return r.sectionModulusWz()
+	return r.Wz()
 }
 
-func (s Ibeam) check() error {
+// Check - Check property of section
+func (s Ibeam) Check() error {
 	r := s.convert()
-	return r.check()
+	return r.Check()
 }
