@@ -106,7 +106,7 @@ func (s sectionRectanglePart) rotate90() (newS sectionRectanglePart, err error) 
 		return *new(sectionRectanglePart), err
 	}
 	//	var newParts []rectanglePart
-	newParts := make([]rectanglePart, 0)
+	var newParts []rectanglePart
 	for _, part := range s.parts {
 		newParts = append(newParts, rectanglePart{
 			xCenter: part.zCenter,
@@ -118,7 +118,7 @@ func (s sectionRectanglePart) rotate90() (newS sectionRectanglePart, err error) 
 }
 
 func (s sectionRectanglePart) convert() sectionTriangles {
-	triangles := make([]triangle, 0)
+	var triangles []triangle
 	for _, part := range s.parts {
 		//   c                d
 		//   ******************

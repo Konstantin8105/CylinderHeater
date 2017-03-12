@@ -75,7 +75,7 @@ func (s sectionTriangles) minimalMomentOfInertia() (j float64) {
 	Jzo := s.momentInertiaZ()
 	// degree 45
 	alpha45 := 45. / 180. * math.Pi
-	rotateTriangle := make([]triangle, 0)
+	var rotateTriangle []triangle
 	for _, tr := range s.triangles {
 		var rTriangle triangle
 		for i := range tr.p {

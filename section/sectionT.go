@@ -26,7 +26,7 @@ func (s sectionT) check() error {
 }
 
 func (s sectionT) convert() sectionRectanglePart {
-	parts := make([]rectanglePart, 0)
+	var parts []rectanglePart
 	// plate 1
 	parts = append(parts, rectanglePart{
 		xCenter: 0,

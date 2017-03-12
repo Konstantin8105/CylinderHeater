@@ -8,7 +8,7 @@ type sectionIbeam struct {
 }
 
 func (s sectionIbeam) convert() (r sectionRectanglePart) {
-	parts := make([]rectanglePart, 0)
+	var parts []rectanglePart
 	// flanges
 	parts = append(parts, rectanglePart{
 		xCenter: 0,
