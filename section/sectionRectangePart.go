@@ -118,19 +118,19 @@ func (s sectionRectanglePart) rotate90() (newS sectionRectanglePart, err error) 
 }
 
 func (s sectionRectanglePart) convert() sectionTriangles {
-	var triangles []triangle
+	var triangles []Triangle
 	for _, part := range s.parts {
 		//   c                d
 		//   ******************
 		//   *                *
 		//   ******************
 		//   a                b
-		a := coord{x: part.xCenter - part.width/2., z: part.zCenter - part.height/2.}
-		b := coord{x: part.xCenter + part.width/2., z: part.zCenter - part.height/2.}
-		c := coord{x: part.xCenter - part.width/2., z: part.zCenter + part.height/2.}
-		d := coord{x: part.xCenter + part.width/2., z: part.zCenter + part.height/2.}
-		triangles = append(triangles, triangle{[3]coord{a, b, d}})
-		triangles = append(triangles, triangle{[3]coord{a, d, c}})
+		a := Coord{X: part.xCenter - part.width/2., Z: part.zCenter - part.height/2.}
+		b := Coord{X: part.xCenter + part.width/2., Z: part.zCenter - part.height/2.}
+		c := Coord{X: part.xCenter - part.width/2., Z: part.zCenter + part.height/2.}
+		d := Coord{X: part.xCenter + part.width/2., Z: part.zCenter + part.height/2.}
+		triangles = append(triangles, Triangle{[3]Coord{a, b, d}})
+		triangles = append(triangles, Triangle{[3]Coord{a, d, c}})
 	}
 	return sectionTriangles{triangles: triangles}
 }

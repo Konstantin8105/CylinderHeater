@@ -5,7 +5,7 @@ import (
 )
 
 type sectionTriangles struct {
-	triangles []triangle
+	triangles []Triangle
 }
 
 func (s sectionTriangles) area() (area float64) {
@@ -43,10 +43,10 @@ func (s sectionTriangles) momentInertiaX() (j float64) {
 	zc := s.centerMassZ()
 	for _, tr := range s.triangles {
 		if tr.check() == nil {
-			tm := triangle{[3]coord{
-				coord{x: tr.p[0].x, z: tr.p[0].z - zc},
-				coord{x: tr.p[1].x, z: tr.p[1].z - zc},
-				coord{x: tr.p[2].x, z: tr.p[2].z - zc},
+			tm := Triangle{[3]Coord{
+				Coord{X: tr.P[0].X, Z: tr.P[0].Z - zc},
+				Coord{X: tr.P[1].X, Z: tr.P[1].Z - zc},
+				Coord{X: tr.P[2].X, Z: tr.P[2].Z - zc},
 			}}
 			j += tm.momentInertiaX()
 		}
@@ -58,10 +58,10 @@ func (s sectionTriangles) momentInertiaZ() (j float64) {
 	xc := s.centerMassX()
 	for _, tr := range s.triangles {
 		if tr.check() == nil {
-			tm := triangle{[3]coord{
-				coord{x: tr.p[0].x - xc, z: tr.p[0].z},
-				coord{x: tr.p[1].x - xc, z: tr.p[1].z},
-				coord{x: tr.p[2].x - xc, z: tr.p[2].z},
+			tm := Triangle{[3]Coord{
+				Coord{X: tr.P[0].X - xc, Z: tr.P[0].Z},
+				Coord{X: tr.P[1].X - xc, Z: tr.P[1].Z},
+				Coord{X: tr.P[2].X - xc, Z: tr.P[2].Z},
 			}}
 			j += tm.momentInertiaZ()
 		}
@@ -75,16 +75,16 @@ func (s sectionTriangles) minimalMomentOfInertia() (j float64) {
 	Jzo := s.momentInertiaZ()
 	// degree 45
 	alpha45 := 45. / 180. * math.Pi
-	var rotateTriangle []triangle
+	var rotateTriangle []Triangle
 	for _, tr := range s.triangles {
-		var rTriangle triangle
-		for i := range tr.p {
-			lenght := math.Sqrt(tr.p[i].x*tr.p[i].x + tr.p[i].z*tr.p[i].z)
-			alpha := math.Atan(tr.p[i].z / tr.p[i].x)
+		var rTriangle Triangle
+		for i := range tr.P {
+			lenght := math.Sqrt(tr.P[i].X*tr.P[i].X + tr.P[i].Z*tr.P[i].Z)
+			alpha := math.Atan(tr.P[i].Z / tr.P[i].X)
 			alpha += alpha45
-			rTriangle.p[i] = coord{
-				x: lenght * math.Cos(alpha),
-				z: lenght * math.Sin(alpha),
+			rTriangle.P[i] = Coord{
+				X: lenght * math.Cos(alpha),
+				Z: lenght * math.Sin(alpha),
 			}
 		}
 		rotateTriangle = append(rotateTriangle, rTriangle)
@@ -105,8 +105,8 @@ func (s sectionTriangles) sectionModulusWx() (j float64) {
 	var zmax float64
 	zc := s.centerMassZ()
 	for _, tr := range s.triangles {
-		for _, c := range tr.p {
-			zmax = math.Max(zmax, c.z-zc)
+		for _, c := range tr.P {
+			zmax = math.Max(zmax, c.Z-zc)
 		}
 	}
 	return s.momentInertiaX() / zmax
@@ -115,8 +115,8 @@ func (s sectionTriangles) sectionModulusWz() (j float64) {
 	var xmax float64
 	xc := s.centerMassX()
 	for _, tr := range s.triangles {
-		for _, c := range tr.p {
-			xmax = math.Max(xmax, c.x-xc)
+		for _, c := range tr.P {
+			xmax = math.Max(xmax, c.X-xc)
 		}
 	}
 	return s.momentInertiaZ() / xmax
@@ -130,48 +130,3 @@ func (s sectionTriangles) check() error {
 	}
 	return nil
 }
-
-/*
-double Shape::CalcJ(double Angle)
-{
-    double J = 0;
-    mesh->RotatePointXOY(0,0,Angle);
-    for(type_LLU i=0;i<mesh->elements.GetSize();i++)
-    {
-        Element el = mesh->elements.Get(i);
-        if(el.ElmType == ELEMENT_TYPE_TRIANGLE)
-        {
-            Node p[3];
-            p[0] = mesh->nodes.Get(el.node[0]-1);
-            p[1] = mesh->nodes.Get(el.node[1]-1);
-            p[2] = mesh->nodes.Get(el.node[2]-1);
-            J += Jx_node(p[0],p[1],p[2]);
-        }
-    }
-    mesh->RotatePointXOY(0,0,-Angle);
-    return J;
-}
-
-double Shape::AngleWithMinimumJ(double step0, double _angle)
-{
-    bool DEBUG = false;//true;
-    double x0 = _angle-step0*1;
-    double x1 = _angle+step0*0;
-    double x2 = _angle+step0*1;
-    double y0 = CalcJ(x0);
-    double y1 = CalcJ(x1);
-    double y2 = CalcJ(x2);
-    double eps= 1e-6;
-    if(DEBUG)printf("step = %.5e x0=%.5e x1=%.5e x2=%.5e\n",GRADIANS(step0),GRADIANS(x0),GRADIANS(x1),GRADIANS(x2));
-    if(GRADIANS(max(x0,x1,x2)-min(x0,x1,x2))<=eps || max(y0,y1,y2)-min(y0,y1,y2)<=eps*min(y0,y1,y2))
-    {
-             if(y0 == min(y0,y1,y2)) return x0;
-        else if(y1 == min(y0,y1,y2)) return x1;
-        else return x2;
-    }
-         if(min(y0,y1,y2) == y0) return AngleWithMinimumJ(step0, x0);
-    else if(min(y0,y1,y2) == y2) return AngleWithMinimumJ(step0, x2);
-    else                         return AngleWithMinimumJ(step0/1.5, x1);
-}
-
-*/
