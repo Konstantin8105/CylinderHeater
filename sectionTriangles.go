@@ -1,166 +1,135 @@
 package main
 
-type coord struct {
-	x, y float64
+import (
+	"math"
+)
+
+type sectionTriangles struct {
+	triangles []triangle
 }
 
-type triangle struct {
-	p [3]coord
+func (s sectionTriangles) area() (area float64) {
+	for _, tr := range s.triangles {
+		if tr.check() == nil {
+			area += tr.area()
+		}
+	}
+	return
 }
 
-func (t triangle) area() float64 {
-	return method2(t)
+func (s sectionTriangles) centerMassX() float64 {
+	var summs float64
+	var areas float64
+	for _, tr := range s.triangles {
+		area := tr.area()
+		summs += area * tr.centerMassX()
+		areas += area
+	}
+	return summs / areas
 }
 
-/*
-
-double area_4node(Node na,Node nb, Node nc, Node nd)
-{
-    return 2*area_3node(na,nb,nc);//fabs(0.5*((nb.x - na.x)*(nc.y - na.y)- (nc.x - na.x)*(nb.y - na.y)))*2;
-};
-*/
-
-func (t triangle) momentInertia() float64 {
-
+func (s sectionTriangles) centerMassZ() float64 {
+	var summs float64
+	var areas float64
+	for _, tr := range s.triangles {
+		area := tr.area()
+		summs += area * tr.centerMassZ()
+		areas += area
+	}
+	return summs / areas
 }
 
-/*
-
-double Shape::Jx_node(Node n0, Node n1, Node n2)
-{
-    Node temp_n[3];
-    temp_n[0] = n0;
-    temp_n[1] = n1;
-    temp_n[2] = n2;
-//    double xc = (n0.x+n1.x+n2.x)/3.;
-//    double yc = (n0.y+n1.y+n2.y)/3.;
-    double a = area_3node(n0,n1,n2);
-                //0.5*((n1.x - n0.x)*(n2.y - n0.y)-
-                //     (n2.x - n0.x)*(n1.y - n0.y));
-    double X_MIN = temp_n[0].x;
-    double Y_MIN = temp_n[0].y;
-    for(int i=0;i<3;i++)
-    {
-        if(Y_MIN > temp_n[i].y)  Y_MIN = temp_n[i].y;
-        if(X_MIN > temp_n[i].x)  X_MIN = temp_n[i].x;
-    }
-
-    for(int i=0;i<3;i++)
-    {
-        temp_n[i].x -= X_MIN;
-        temp_n[i].y -= Y_MIN;
-    }
-
-    type_LLU x_left = 0, x_mid = 0, x_right =0;
-    if(temp_n[0].x >= temp_n[1].x && temp_n[0].x > temp_n[2].x)
-    {
-        x_right = 0;
-        if(temp_n[1].x > temp_n[2].x) { x_mid = 1; x_left = 2;}
-        else                          { x_mid = 2; x_left = 1;}
-    };
-    if(temp_n[1].x >= temp_n[0].x && temp_n[1].x > temp_n[2].x)
-    {
-        x_right = 1;
-        if(temp_n[0].x > temp_n[2].x) { x_mid = 0; x_left = 2;}
-        else                          { x_mid = 2; x_left = 0;}
-    };
-    if(temp_n[2].x >= temp_n[1].x && temp_n[2].x > temp_n[0].x)
-    {
-        x_right = 2;
-        if(temp_n[0].x > temp_n[1].x) { x_mid = 0; x_left = 1;}
-        else                          { x_mid = 1; x_left = 0;}
-    };
-    if(temp_n[x_left].x == temp_n[x_mid].x && temp_n[x_left].y < temp_n[x_mid].y)
-    {
-        type_LLU r = x_left;
-        x_left  = x_mid;
-        x_mid   = r;
-    }
-    if(temp_n[x_right].x == temp_n[x_mid].x && temp_n[x_right].y < temp_n[x_mid].y)
-    {
-        type_LLU r = x_right;
-        x_right = x_mid;
-        x_mid   = r;
-    }
-
-    type_LLU type  = 0;
-    double y0 =  temp_n[x_left ].y + (temp_n[x_right].y-temp_n[x_left ].y)/
-                (temp_n[x_right].x-temp_n[x_left ].x)*(temp_n[x_mid].x-temp_n[x_left].x);
-    if(temp_n[x_mid].y < y0) type = 0;
-    else type = 1;
-
-    double jx = -1e30;
-    double Jx_left_mid    = Jx_node(temp_n[x_left ], temp_n[x_mid  ]);
-    double Jx_mid_right   = Jx_node(temp_n[x_mid  ], temp_n[x_right]);
-    double Jx_left_right  = Jx_node(temp_n[x_left ], temp_n[x_right]);
-
-
-    if(type == 0)
-    {
-        jx  = +Jx_left_right
-              -Jx_left_mid
-              -Jx_mid_right;
-    }
-
-    if(type == 1)
-    {
-        jx  = -Jx_left_right
-              +Jx_left_mid
-              +Jx_mid_right;
-    }
-
-
-
-
-    double YC = (temp_n[0].y+temp_n[1].y+temp_n[2].y)/3.;
-    if(jx < 1e-10) jx = 0;
-    if(jx <0) {print_name("jx is less NULL");printf("jx[%e]\n",jx);}
-    if(a  <0) print_name("area is less NULL");
-    jx += -a*pow(YC,2.)+a*pow(Y_MIN+YC,2.);//*fabs(Y_MIN)/Y_MIN;
-
-    return jx;
+func (s sectionTriangles) momentInertiaX() (j float64) {
+	zc := s.centerMassZ()
+	for _, tr := range s.triangles {
+		if tr.check() == nil {
+			tm := triangle{[3]coord{
+				coord{x: tr.p[0].x, z: tr.p[0].z - zc},
+				coord{x: tr.p[1].x, z: tr.p[1].z - zc},
+				coord{x: tr.p[2].x, z: tr.p[2].z - zc},
+			}}
+			j += tm.momentInertiaX()
+		}
+	}
+	return
 }
 
+func (s sectionTriangles) momentInertiaZ() (j float64) {
+	xc := s.centerMassX()
+	for _, tr := range s.triangles {
+		if tr.check() == nil {
+			tm := triangle{[3]coord{
+				coord{x: tr.p[0].x - xc, z: tr.p[0].z},
+				coord{x: tr.p[1].x - xc, z: tr.p[1].z},
+				coord{x: tr.p[2].x - xc, z: tr.p[2].z},
+			}}
+			j += tm.momentInertiaZ()
+		}
+	}
+	return
+}
 
-*/
+func (s sectionTriangles) minimalMomentOfInertia() (j float64) {
+	// degree 0
+	Jxo := s.momentInertiaX()
+	Jzo := s.momentInertiaZ()
+	// degree 45
+	alpha45 := 45. / 180. * math.Pi
+	rotateTriangle := make([]triangle, 0)
+	for _, tr := range s.triangles {
+		var rTriangle triangle
+		for i := range tr.p {
+			lenght := math.Sqrt(tr.p[i].x*tr.p[i].x + tr.p[i].z*tr.p[i].z)
+			alpha := math.Atan(tr.p[i].z / tr.p[i].x)
+			alpha += alpha45
+			rTriangle.p[i] = coord{
+				x: lenght * math.Cos(alpha),
+				z: lenght * math.Sin(alpha),
+			}
+		}
+		rotateTriangle = append(rotateTriangle, rTriangle)
+	}
+	Jx45 := sectionTriangles{triangles: rotateTriangle}.momentInertiaX()
 
-/*
-double Shape::Jx_node(Node n1, Node n2)
-{
-    Node temp_n1 = n1;
-    Node temp_n2 = n2;
-    if(n1.y == 0 && n2.y == 0)
-        return 0;
-    if(n1.x == n2.x)
-        return 0;
-    if(n1.x == n2.x && n1.y == n2.y)
-    {
-        print_name("STRANGE");
-        WARNING();
-        return 0;
-    }
+	// f = (cos45)^2 = (sin45)^2
+	f := math.Pow(math.Cos(45./180.*math.Pi), 2.)
+	Jxyo := Jxo*f - Jx45 + Jzo*f
+	alpha := math.Atan(2 * Jxyo / (Jzo - Jxo))
 
-    if(temp_n1.x > temp_n2.x)
-    {
-        swap(temp_n1.x,temp_n2.x);
-        return Jx_node(temp_n1,temp_n2);
-    }
-    if(temp_n1.y > temp_n2.y)
-    {
-        swap(temp_n1.y,temp_n2.y);
-        return Jx_node(temp_n1,temp_n2);
-    }
+	Ju := Jxo*math.Pow(math.Cos(alpha), 2.) - Jxyo*math.Sin(2*alpha) + Jzo*math.Pow(math.Sin(alpha), 2.)
+	Jv := Jxo*math.Pow(math.Sin(alpha), 2.) + Jxyo*math.Sin(2*alpha) + Jzo*math.Pow(math.Cos(alpha), 2.)
+	return math.Min(Ju, Jv)
+}
 
-    double jx = 0;
-    double a = temp_n1.y;
-    double b = fabs(temp_n2.x - temp_n1.x);
-    double h = fabs(temp_n2.y - temp_n1.y);
-    if(temp_n2.y < a) print_name("WARNING: position a");
-    jx = (b*pow(a,3.)/12.+a*b*pow(a/2.,2.))+(b*pow(h,3.)/12.+(b*h/2.)*pow(a,2.));
-    return fabs(jx);
-};
+func (s sectionTriangles) sectionModulusWx() (j float64) {
+	var zmax float64
+	zc := s.centerMassZ()
+	for _, tr := range s.triangles {
+		for _, c := range tr.p {
+			zmax = math.Max(zmax, c.z-zc)
+		}
+	}
+	return s.momentInertiaX() / zmax
+}
+func (s sectionTriangles) sectionModulusWz() (j float64) {
+	var xmax float64
+	xc := s.centerMassX()
+	for _, tr := range s.triangles {
+		for _, c := range tr.p {
+			xmax = math.Max(xmax, c.x-xc)
+		}
+	}
+	return s.momentInertiaZ() / xmax
+}
 
-*/
+func (s sectionTriangles) check() error {
+	for _, tr := range s.triangles {
+		if err := tr.check(); err != nil {
+			return err
+		}
+	}
+	return nil
+}
 
 /*
 double Shape::CalcJ(double Angle)

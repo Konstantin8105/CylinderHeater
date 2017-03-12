@@ -59,8 +59,7 @@ func (s sectionRectanglePart) momentInertiaZ() float64 {
 }
 
 func (s sectionRectanglePart) minimalMomentOfInertia() float64 {
-	// TODO: more logical calculation
-	return math.Min(s.momentInertiaX(), s.momentInertiaZ())
+	return s.convert().minimalMomentOfInertia()
 }
 
 func (s sectionRectanglePart) sectionModulusWx() float64 {
@@ -116,4 +115,22 @@ func (s sectionRectanglePart) rotate90() (newS sectionRectanglePart, err error) 
 			width:   part.height})
 	}
 	return sectionRectanglePart{parts: newParts}, nil
+}
+
+func (s sectionRectanglePart) convert() sectionTriangles {
+	triangles := make([]triangle, 0)
+	for _, part := range s.parts {
+		//   c                d
+		//   ******************
+		//   *                *
+		//   ******************
+		//   a                b
+		a := coord{x: part.xCenter - part.width/2., z: part.zCenter - part.height/2.}
+		b := coord{x: part.xCenter + part.width/2., z: part.zCenter - part.height/2.}
+		c := coord{x: part.xCenter - part.width/2., z: part.zCenter + part.height/2.}
+		d := coord{x: part.xCenter + part.width/2., z: part.zCenter + part.height/2.}
+		triangles = append(triangles, triangle{[3]coord{a, b, d}})
+		triangles = append(triangles, triangle{[3]coord{a, d, c}})
+	}
+	return sectionTriangles{triangles: triangles}
 }
