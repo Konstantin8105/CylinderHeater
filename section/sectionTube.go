@@ -11,31 +11,38 @@ type Tube struct {
 	Thk float64 // thickness // meter
 }
 
-func (s Tube) area() float64 {
+// Area - cross-section area
+func (s Tube) Area() float64 {
 	return math.Pi / 4.0 * (s.OD*s.OD - math.Pow(s.OD-2*s.Thk, 2.0))
 }
 
-func (s Tube) momentInertiaX() float64 {
+// Jx - Moment inertia of axe X
+func (s Tube) Jx() float64 {
 	return math.Pi / 64 * (math.Pow(s.OD, 4) - math.Pow(s.OD-2*s.Thk, 4))
 }
 
-func (s Tube) momentInertiaZ() float64 {
-	return s.momentInertiaX()
+// Jz - Moment inertia of axe Z
+func (s Tube) Jz() float64 {
+	return s.Jx()
 }
 
-func (s Tube) minimalMomentOfInertia() float64 {
-	return s.momentInertiaX()
+// Jmin - Minimal moment inertia
+func (s Tube) Jmin() float64 {
+	return s.Jx()
 }
 
-func (s Tube) sectionModulusWx() float64 {
+// Wx - Section modulus of axe X
+func (s Tube) Wx() float64 {
 	return math.Pi / 32 * math.Pow(s.OD, 3) * (1 - math.Pow((s.OD-2*s.Thk)/s.OD, 4))
 }
 
-func (s Tube) sectionModulusWz() float64 {
-	return s.sectionModulusWx()
+// Wz - Section modulus of axe Z
+func (s Tube) Wz() float64 {
+	return s.Wx()
 }
 
-func (s Tube) check() error {
+// Check - check property of section
+func (s Tube) Check() error {
 	switch {
 	case s.OD <= 0:
 		return fmt.Errorf("Not correct outside diameter of tube %v", s.OD)
