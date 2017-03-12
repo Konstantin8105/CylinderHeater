@@ -1,4 +1,4 @@
-package section
+package triangleSection
 
 import (
 	"math"
@@ -12,8 +12,8 @@ func getTestTriangles() [2]Triangle {
 	}
 }
 
-func getTestCorrect() sectionRectanglePart {
-	return sectionRectanglePart{parts: []rectanglePart{
+func getTestCorrect() section.sectionRectanglePart {
+	return section.sectionRectanglePart{parts: []rectanglePart{
 		rectanglePart{
 			xCenter: 0.5,
 			zCenter: 0.5,

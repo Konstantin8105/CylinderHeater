@@ -4,8 +4,8 @@ import (
 	"testing"
 )
 
-func getTestIbeam() sectionIbeam {
-	return sectionIbeam{h: 0.1, b: 0.055, tw: 0.0045, tf: 0.0072}
+func getTestIbeam() Ibeam {
+	return Ibeam{H: 0.1, B: 0.055, Tw: 0.0045, Tf: 0.0072}
 }
 
 func TestIbeamArea(t *testing.T) {

@@ -1,13 +1,13 @@
-package section
+package triangleSection
 
 import (
 	"fmt"
 	"math"
 )
 
-// Coord - coordinate of point in plane XOZ
+// Coord - coordinate of point in plane XOZ used for triangle points
 type Coord struct {
-	X, Z float64 // coordinates
+	X, Z float64 // coordinates // meter
 }
 
 // Triangle - elementary triangle element for design section and have 3 coordinate of points.

@@ -1,15 +1,17 @@
-package section
+package triangleSection
 
 import (
 	"math"
 )
 
-type sectionTriangles struct {
-	triangles []Triangle
+// TriangleSection - section created by triangles. It is a universal type of section
+type TriangleSection struct {
+	Elements []Triangle // Slice of triangles
 }
 
-func (s sectionTriangles) area() (area float64) {
-	for _, tr := range s.triangles {
+// Area - cross-section area
+func (s TriangleSection) Area() (area float64) {
+	for _, tr := range s.Elements {
 		if tr.check() == nil {
 			area += tr.area()
 		}
@@ -17,10 +19,10 @@ func (s sectionTriangles) area() (area float64) {
 	return
 }
 
-func (s sectionTriangles) centerMassX() float64 {
+func (s TriangleSection) centerMassX() float64 {
 	var summs float64
 	var areas float64
-	for _, tr := range s.triangles {
+	for _, tr := range s.Elements {
 		area := tr.area()
 		summs += area * tr.centerMassX()
 		areas += area
@@ -28,10 +30,10 @@ func (s sectionTriangles) centerMassX() float64 {
 	return summs / areas
 }
 
-func (s sectionTriangles) centerMassZ() float64 {
+func (s TriangleSection) centerMassZ() float64 {
 	var summs float64
 	var areas float64
-	for _, tr := range s.triangles {
+	for _, tr := range s.Elements {
 		area := tr.area()
 		summs += area * tr.centerMassZ()
 		areas += area
@@ -39,9 +41,10 @@ func (s sectionTriangles) centerMassZ() float64 {
 	return summs / areas
 }
 
-func (s sectionTriangles) momentInertiaX() (j float64) {
+// Jx - Moment inertia of axe X
+func (s TriangleSection) Jx() (j float64) {
 	zc := s.centerMassZ()
-	for _, tr := range s.triangles {
+	for _, tr := range s.Elements {
 		if tr.check() == nil {
 			tm := Triangle{[3]Coord{
 				Coord{X: tr.P[0].X, Z: tr.P[0].Z - zc},
@@ -54,9 +57,10 @@ func (s sectionTriangles) momentInertiaX() (j float64) {
 	return
 }
 
-func (s sectionTriangles) momentInertiaZ() (j float64) {
+// Jz - Moment inertia of axe Z
+func (s TriangleSection) Jz() (j float64) {
 	xc := s.centerMassX()
-	for _, tr := range s.triangles {
+	for _, tr := range s.Elements {
 		if tr.check() == nil {
 			tm := Triangle{[3]Coord{
 				Coord{X: tr.P[0].X - xc, Z: tr.P[0].Z},
@@ -69,14 +73,15 @@ func (s sectionTriangles) momentInertiaZ() (j float64) {
 	return
 }
 
-func (s sectionTriangles) minimalMomentOfInertia() (j float64) {
+// Jmin - Minimal moment inertia
+func (s TriangleSection) Jmin() (j float64) {
 	// degree 0
-	Jxo := s.momentInertiaX()
-	Jzo := s.momentInertiaZ()
+	Jxo := s.Jx()
+	Jzo := s.Jz()
 	// degree 45
 	alpha45 := 45. / 180. * math.Pi
 	var rotateTriangle []Triangle
-	for _, tr := range s.triangles {
+	for _, tr := range s.Elements {
 		var rTriangle Triangle
 		for i := range tr.P {
 			lenght := math.Sqrt(tr.P[i].X*tr.P[i].X + tr.P[i].Z*tr.P[i].Z)
@@ -89,7 +94,7 @@ func (s sectionTriangles) minimalMomentOfInertia() (j float64) {
 		}
 		rotateTriangle = append(rotateTriangle, rTriangle)
 	}
-	Jx45 := sectionTriangles{triangles: rotateTriangle}.momentInertiaX()
+	Jx45 := TriangleSection{Elements: rotateTriangle}.Jx()
 
 	// f = (cos45)^2 = (sin45)^2
 	f := math.Pow(math.Cos(45./180.*math.Pi), 2.)
@@ -101,29 +106,33 @@ func (s sectionTriangles) minimalMomentOfInertia() (j float64) {
 	return math.Min(Ju, Jv)
 }
 
-func (s sectionTriangles) sectionModulusWx() (j float64) {
+// Wx - Section modulus of axe X
+func (s TriangleSection) Wx() (j float64) {
 	var zmax float64
 	zc := s.centerMassZ()
-	for _, tr := range s.triangles {
+	for _, tr := range s.Elements {
 		for _, c := range tr.P {
 			zmax = math.Max(zmax, c.Z-zc)
 		}
 	}
-	return s.momentInertiaX() / zmax
+	return s.Jx() / zmax
 }
-func (s sectionTriangles) sectionModulusWz() (j float64) {
+
+// Wz - Section modulus of axe Z
+func (s TriangleSection) Wz() (j float64) {
 	var xmax float64
 	xc := s.centerMassX()
-	for _, tr := range s.triangles {
+	for _, tr := range s.Elements {
 		for _, c := range tr.P {
 			xmax = math.Max(xmax, c.X-xc)
 		}
 	}
-	return s.momentInertiaZ() / xmax
+	return s.Jz() / xmax
 }
 
-func (s sectionTriangles) check() error {
-	for _, tr := range s.triangles {
+// Check - check property of section
+func (s TriangleSection) Check() error {
+	for _, tr := range s.Elements {
 		if err := tr.check(); err != nil {
 			return err
 		}

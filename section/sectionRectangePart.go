@@ -59,7 +59,7 @@ func (s sectionRectanglePart) momentInertiaZ() float64 {
 }
 
 func (s sectionRectanglePart) minimalMomentOfInertia() float64 {
-	return s.convert().minimalMomentOfInertia()
+	return s.convert().Jmin()
 }
 
 func (s sectionRectanglePart) sectionModulusWx() float64 {
@@ -117,7 +117,7 @@ func (s sectionRectanglePart) rotate90() (newS sectionRectanglePart, err error) 
 	return sectionRectanglePart{parts: newParts}, nil
 }
 
-func (s sectionRectanglePart) convert() sectionTriangles {
+func (s sectionRectanglePart) convert() TriangleSection {
 	var triangles []Triangle
 	for _, part := range s.parts {
 		//   c                d
@@ -132,5 +132,5 @@ func (s sectionRectanglePart) convert() sectionTriangles {
 		triangles = append(triangles, Triangle{[3]Coord{a, b, d}})
 		triangles = append(triangles, Triangle{[3]Coord{a, d, c}})
 	}
-	return sectionTriangles{triangles: triangles}
+	return TriangleSection{Elements: triangles}
 }
