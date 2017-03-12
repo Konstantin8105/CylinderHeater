@@ -11,7 +11,7 @@ Geomerty of plate
 
 */
 
-package main
+package section
 
 import (
 	"fmt"

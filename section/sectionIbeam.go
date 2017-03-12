@@ -1,4 +1,4 @@
-package main
+package section
 
 type sectionIbeam struct {
 	h  float64 // height of section // meter

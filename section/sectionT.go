@@ -6,40 +6,10 @@
 // ----*----
 //     (0,0) - center
 
-package main
+package section
 
 type sectionT struct {
 	plate1, plate2 sectionPlate
-}
-
-func (s sectionT) area() float64 {
-	r := s.convert()
-	return r.area()
-}
-
-func (s sectionT) momentInertiaX() float64 {
-	r := s.convert()
-	return r.momentInertiaX()
-}
-
-func (s sectionT) momentInertiaZ() float64 {
-	r := s.convert()
-	return r.momentInertiaZ()
-}
-
-func (s sectionT) minimalMomentOfInertia() float64 {
-	r := s.convert()
-	return r.minimalMomentOfInertia()
-}
-
-func (s sectionT) sectionModulusWx() float64 {
-	r := s.convert()
-	return r.sectionModulusWx()
-}
-
-func (s sectionT) sectionModulusWz() float64 {
-	r := s.convert()
-	return r.sectionModulusWz()
 }
 
 func (s sectionT) check() error {
