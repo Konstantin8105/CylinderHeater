@@ -5,11 +5,13 @@ import (
 	"math"
 )
 
-type coord struct {
+// Coord - coordinate of point in plane XOZ
+type Coord struct {
 	x, z float64
 }
 
-type triangle struct {
+// Triangle - elementary triangle element for design section and have 3 coordinate of points.
+type Triangle struct {
 	p [3]coord
 }
 
