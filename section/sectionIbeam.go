@@ -1,6 +1,16 @@
 package section
 
 // Ibeam - section like IPE, HEB
+//    Tf
+//  ========== ---
+//      ||      /\
+//      ||      |
+//    Tw||      | H
+//      ||      |
+//      ||      V
+//  ========== ---
+//  |        |
+//  |<--B--->|
 type Ibeam struct {
 	H  float64 // height of section // meter
 	B  float64 // width of flange // meter

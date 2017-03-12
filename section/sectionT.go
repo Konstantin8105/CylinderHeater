@@ -1,3 +1,5 @@
+package section
+
 // Section T:
 //    | |
 //    | | Plate 1
@@ -5,9 +7,6 @@
 // --------- Plate 2
 // ----*----
 //     (0,0) - center
-
-package section
-
 type sectionT struct {
 	plate1, plate2 Plate
 }

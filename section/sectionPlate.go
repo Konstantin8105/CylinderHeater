@@ -1,4 +1,12 @@
+package section
+
+import (
+	"fmt"
+	"math"
+)
+
 /*
+Plate - typical section of plate
 Geomerty of plate
    /\Z
    |
@@ -10,15 +18,6 @@ Geomerty of plate
   +-+
 
 */
-
-package section
-
-import (
-	"fmt"
-	"math"
-)
-
-// Plate - typical section of plate
 type Plate struct {
 	Height    float64 // height of plate // meter
 	Thickness float64 // thickness of plate // meter
