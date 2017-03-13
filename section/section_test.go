@@ -15,5 +15,5 @@ func Example() {
 func ExamplePlate() {
 	plate := Plate{Height: 0.080 /* meter */, Thickness: 0.008 /* meter */}
 	fmt.Printf("Area of plate is %.1e m^2\n", plate.Area())
-	// Output: Area of plate is 6.4e-4 m^2
+	// Output: Area of plate is 6.4e-04 m^2
 }
